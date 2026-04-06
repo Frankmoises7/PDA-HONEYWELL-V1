@@ -1,0 +1,336 @@
+// ─── Barra resumen + botón manual ──────────────────────────────────────────
+.resumen-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px 0 16px;
+  background: #1a237e;
+  color: #fff;
+  min-height: 48px;
+
+  .resumen-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88rem;
+    font-weight: 500;
+
+    strong { font-size: 1rem; }
+  }
+
+  .resumen-icon {
+    font-size: 1.1rem;
+    color: #69f0ae;
+  }
+
+  .resumen-hint {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+}
+
+// Botón "Agregar Manual" — prominente, en la barra superior
+.fab-manual {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  flex-shrink: 0;
+
+  &:active { background: rgba(255,255,255,0.3); }
+
+  ion-icon { font-size: 1rem; }
+}
+
+// ─── Estado vacío ──────────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 60px;
+  gap: 14px;
+
+  .empty-scanner {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #e8eaf6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 50px;
+      color: #3f51b5;
+      // Animación suave pero barata en GPU (solo opacity, no transform)
+      animation: scanFade 2.4s ease-in-out infinite;
+    }
+  }
+
+  .empty-title { font-size: 1.1rem; font-weight: 700; color: #333; margin: 0; }
+  .empty-sub   { font-size: 0.85rem; color: #888; text-align: center; padding: 0 28px; margin: 0; line-height: 1.5; }
+}
+
+// Solo opacity — no usa layout, no fuerza repaint
+@keyframes scanFade {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+// ─── Lista de productos ─────────────────────────────────────────────────────
+.productos-list {
+  padding: 6px 10px 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 10px;
+  padding: 6px 10px 6px 12px;
+  // Sombra liviana — sin blur pesado
+  border-left: 3px solid #3f51b5;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+
+  &:active { background: #eef4ff; }
+
+  .product-left { flex: 1; min-width: 0; }
+
+  .product-id-badge {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1a237e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .product-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .qty-bubble {
+    min-width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #1a237e;
+    color: #fff;
+    font-size: 0.92rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .edit-btn {
+    --color: #8c8c8c;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+  }
+}
+
+// ─── Modales ────────────────────────────────────────────────────────────────
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 40, 0.55);
+  display: flex;
+  align-items: flex-end;
+  z-index: 20000;
+  // padding-bottom se aplica dinámicamente desde el componente
+  // El área de contenido del flex container = altura_pantalla - padding_bottom
+  // Así la card no puede sobrepasar ese espacio
+}
+
+.modal-card {
+  background: #fafafa;
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  // max-height: 100% → relativo al content-box del overlay (ya descontado padding-bottom)
+  // Esto garantiza que nunca se salga del espacio disponible sobre el teclado
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-body {
+  // flex: 1 + overflow-y: auto → el header y footer quedan fijos,
+  // el body scrollea si el contenido no entra
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-pill {
+  width: 36px;
+  height: 4px;
+  background: #ddd;
+  border-radius: 4px;
+  margin: 8px auto 0;
+}
+
+// Headers de modal
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px 12px;
+  background: #1a237e;
+  color: #fff;
+
+  &.header-edit    { background: #00695c; }
+  &.header-warning { background: #bf360c; }
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .modal-header-sub {
+    margin: 2px 0 0;
+    font-size: 0.75rem;
+    opacity: 0.85;
+  }
+}
+
+.modal-header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  ion-icon { font-size: 1.4rem; color: #fff; }
+}
+
+.modal-body {
+  padding: 14px 14px 6px;
+  background: #fafafa;
+}
+
+.product-detail-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  border: 1px solid #eee;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f4f4f4;
+
+  &:last-child { border-bottom: none; }
+  &.highlight  { background: #f0f4ff; }
+
+  .detail-icon {
+    font-size: 1.2rem;
+    color: #bbb;
+    flex-shrink: 0;
+    &.accent { color: #3f51b5; }
+  }
+
+  .detail-label {
+    display: block;
+    font-size: 0.68rem;
+    color: #aaa;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+  }
+
+  .detail-value {
+    display: block;
+    font-size: 0.95rem;
+    color: #1a1a1a;
+    font-weight: 500;
+    &.mono  { font-family: 'Courier New', monospace; }
+    &.price { font-size: 1.4rem; font-weight: 800; color: #1a237e; }
+  }
+}
+
+// Input cantidad
+.cantidad-section {
+  .cantidad-label {
+    font-size: 0.72rem;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin: 0 4px 5px;
+  }
+}
+
+.cantidad-item {
+  --background: #fff;
+  --border-radius: 12px;
+  --padding-start: 14px;
+  --inner-padding-end: 14px;
+  border-radius: 12px;
+  border: 2px solid #c5cae9;
+
+  ion-input {
+    font-size: 2rem;
+    font-weight: 800;
+    text-align: center;
+    color: #1a237e;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+  }
+
+  // Para el input de texto (ID producto) — tamaño normal
+  &.cantidad-item--text ion-input {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: left;
+    color: #333;
+  }
+}
+
+// Footer
+.modal-footer {
+  padding: 10px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fafafa;
+
+  &.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    .btn-cancel-full { grid-column: 1 / -1; }
+  }
+
+  .btn-guardar { --background: #1f9d55; --color: #fff; font-size: 1rem; font-weight: 700; height: 48px; }
+  .btn-cancelar { --background: #d32f2f; --color: #fff; font-size: 1rem; font-weight: 700; height: 48px; }
+}

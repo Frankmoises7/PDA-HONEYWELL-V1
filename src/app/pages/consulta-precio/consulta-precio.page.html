@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Consulta de Precio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <div class="scan-state">
+    <ion-icon name="barcode-outline" class="scan-icon"></ion-icon>
+    <p class="scan-text">Apuntá el scanner a un código</p>
+    <p class="scan-sub" *ngIf="codigo">Último: <strong>{{ codigo }}</strong></p>
+  </div>
+
+  <!-- Modal resultado -->
+  <div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+
+      <div class="modal-header" [class.error]="!!mensajeError">
+        <ion-icon [name]="mensajeError ? 'alert-circle-outline' : 'checkmark-circle-outline'" class="result-icon"></ion-icon>
+        <h3>{{ mensajeError ? 'No encontrado' : 'Producto encontrado' }}</h3>
+      </div>
+
+      <div class="modal-body" *ngIf="!mensajeError">
+        <div class="info-row">
+          <span class="info-label">ID</span>
+          <span class="info-value mono">{{ id_producto }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Producto</span>
+          <span class="info-value nombre">{{ nombreProducto }}</span>
+        </div>
+        <div class="info-row precio-row">
+          <span class="info-label">Precio de venta</span>
+          <span class="info-value precio">${{ precio | number:'1.0-0' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Código escaneado</span>
+          <span class="info-value mono small">{{ codigo }}</span>
+        </div>
+      </div>
+
+      <div class="modal-body error-body" *ngIf="mensajeError">
+        <ion-icon name="search-outline" class="error-search-icon"></ion-icon>
+        <p>{{ mensajeError }}</p>
+        <p class="codigo-error">Código: {{ codigo }}</p>
+      </div>
+
+      <div class="modal-footer">
+        <ion-button expand="block" (click)="cerrarModal()">
+          <ion-icon name="scan-outline" slot="start"></ion-icon>
+          Escanear otro
+        </ion-button>
+      </div>
+
+    </div>
+  </div>
+
+</ion-content>

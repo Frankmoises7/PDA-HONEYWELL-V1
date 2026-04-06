@@ -1,0 +1,189 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/recepcion-mercaderia"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Recepción #{{ idRecepcion }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="resumen-bar">
+    <div class="resumen-left">
+      <ion-icon name="checkmark-circle" class="resumen-icon" *ngIf="productosEscaneados.length > 0"></ion-icon>
+      <span *ngIf="productosEscaneados.length > 0"><strong>{{ productosEscaneados.length }}</strong> productos</span>
+      <span *ngIf="productosEscaneados.length === 0" class="resumen-hint">Listo para escanear</span>
+    </div>
+    <button class="fab-manual" (click)="abrirAgregarManual()">
+      <ion-icon name="pencil-outline"></ion-icon>
+      Agregar manual
+    </button>
+  </div>
+
+  <!-- Estado vacío -->
+  <div class="empty-state" *ngIf="productosEscaneados.length === 0">
+    <ion-icon name="scan-outline" class="empty-icon"></ion-icon>
+    <p>Apunta el scanner a un código de barras</p>
+  </div>
+
+  <!-- Tabla de productos escaneados -->
+  <div class="productos-list" *ngIf="productosEscaneados.length > 0">
+    <div class="list-header">
+      <span class="col-id">ID</span>
+      <span class="col-scan">Esc.</span>
+      <span class="col-ped">Ped.</span>
+      <span class="col-action"></span>
+    </div>
+    <div
+      class="list-row"
+      [class.extra]="!obtenerCantidadPedida(item.id_producto)"
+      (click)="editarCantidad(item)"
+      *ngFor="let item of productosEscaneados">
+      <span class="col-id">{{ item.id_producto }}</span>
+      <span class="col-scan badge-qty">{{ item.cantidad }}</span>
+      <span class="col-ped">{{ obtenerCantidadPedida(item.id_producto) || '—' }}</span>
+      <span class="col-action">
+        <ion-button
+          fill="clear"
+          class="edit-btn"
+          (click)="editarCantidad(item); $event.stopPropagation()">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+      </span>
+    </div>
+  </div>
+</ion-content>
+
+  <!-- ======= MODAL: Guardar cantidad ======= -->
+  <div *ngIf="mostrarModal"
+       class="modal-overlay"
+       [style.padding-bottom.px]="keyboardOffset"
+       (click)="cancelarModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header" [class.extra]="productoSeleccionado?.fueraRecepcion">
+        <h3>{{ editando ? 'Editar Cantidad' : 'Nuevo Escaneo' }}</h3>
+        <span class="badge-extra" *ngIf="productoSeleccionado?.fueraRecepcion">EXTRA</span>
+      </div>
+      <div class="modal-body">
+        <div class="producto-info">
+          <span class="info-label">Producto</span>
+          <span class="info-value nombre">{{ productoSeleccionado?.nombre || productoSeleccionadoNombre }}</span>
+        </div>
+        <div class="producto-info" *ngIf="precio">
+          <span class="info-label">Precio</span>
+          <span class="info-value precio">${{ precio | number:'1.0-0' }}</span>
+        </div>
+        <ion-item class="cantidad-item">
+          <ion-label position="stacked">Cantidad</ion-label>
+          <ion-input
+            #cantidadInputRef
+            type="number"
+            inputmode="numeric"
+            [(ngModel)]="cantidad"
+            (ionFocus)="enableInput($event)"
+            clearInput>
+          </ion-input>
+        </ion-item>
+      </div>
+      <div class="modal-footer two-col">
+        <ion-button expand="block" (click)="guardarCantidad()" class="btn-guardar">
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+          Guardar
+        </ion-button>
+        <ion-button expand="block" class="btn-cancelar" (click)="cancelarModal()">
+          Cancelar
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= MODAL: Sumar o editar ======= -->
+  <div *ngIf="sumarOEditar"
+       class="modal-overlay"
+       [style.padding-bottom.px]="keyboardOffset"
+       (click)="cancelarModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header warning">
+        <h3>Producto ya escaneado</h3>
+      </div>
+      <div class="modal-body">
+        <div class="producto-info">
+          <span class="info-label">Producto</span>
+          <span class="info-value nombre">{{ productoSeleccionadoNombre }}</span>
+        </div>
+        <div class="producto-info">
+          <span class="info-label">Cantidad actual</span>
+          <span class="info-value badge-qty-lg">{{ cantidadEscaneada }}</span>
+        </div>
+        <ion-item class="cantidad-item">
+          <ion-label position="stacked">Nueva cantidad</ion-label>
+          <ion-input
+            #cantidadSoEInputRef
+            type="number"
+            inputmode="numeric"
+            [(ngModel)]="cantidadSoE"
+            (ionFocus)="enableInput($event)"
+            clearInput>
+          </ion-input>
+        </ion-item>
+      </div>
+      <div class="modal-footer two-buttons">
+        <ion-button expand="block" (click)="guardarSumarOEditar('sumar')">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Sumar
+        </ion-button>
+        <ion-button expand="block" color="warning" (click)="guardarSumarOEditar('editar')">
+          <ion-icon name="create-outline" slot="start"></ion-icon>
+          Reemplazar
+        </ion-button>
+        <ion-button expand="block" fill="outline" color="medium" (click)="cancelarModal()">
+          Cancelar
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= MODAL: Agregar manual ======= -->
+  <div *ngIf="agregarManual"
+       class="modal-overlay"
+       [style.padding-bottom.px]="keyboardOffset"
+       (click)="cancelarModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Agregar Manual</h3>
+      </div>
+      <div class="modal-body">
+        <ion-item class="cantidad-item cantidad-item--text">
+          <ion-label position="stacked">ID del Producto</ion-label>
+          <ion-input
+            [(ngModel)]="idProductoManual"
+            type="text"
+            inputmode="text"
+            (ionFocus)="enableInput($event)"
+            clearInput
+            placeholder="Ej: 1234 o ABC-01">
+          </ion-input>
+        </ion-item>
+        <ion-item class="cantidad-item">
+          <ion-label position="stacked">Cantidad</ion-label>
+          <ion-input
+            [(ngModel)]="cantidadManual"
+            type="number"
+            inputmode="numeric"
+            (ionFocus)="enableInput($event)"
+            clearInput>
+          </ion-input>
+        </ion-item>
+      </div>
+      <div class="modal-footer two-col">
+        <ion-button expand="block" (click)="guardarProductoManual()" class="btn-guardar">
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          Guardar
+        </ion-button>
+        <ion-button expand="block" class="btn-cancelar" (click)="cancelarModal()">
+          Cancelar
+        </ion-button>
+      </div>
+    </div>
+  </div>
+

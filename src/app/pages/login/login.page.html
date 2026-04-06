@@ -1,0 +1,47 @@
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-wrapper">
+
+    <img src="assets/logo-famasa.png" class="logo-login" alt="Logo" />
+
+    <h2 class="titulo-login">Iniciar sesión</h2>
+
+    <ion-item class="field-item">
+      <ion-label position="stacked">RUT</ion-label>
+      <ion-input
+        [(ngModel)]="rut"
+        (ngModelChange)="rut = formatearRut(rut)"
+        type="text"
+        autocomplete="off"
+        autocorrect="off"
+        inputmode="text"
+        (keydown.enter)="login()">
+      </ion-input>
+    </ion-item>
+
+    <ion-item class="field-item">
+      <ion-label position="stacked">Contraseña</ion-label>
+      <ion-input
+        [(ngModel)]="password"
+        type="password"
+        autocomplete="off"
+        autocorrect="off"
+        inputmode="text"
+        (keydown.enter)="login()">
+      </ion-input>
+    </ion-item>
+
+    <ion-button
+      expand="block"
+      class="btn-login"
+      [disabled]="cargando"
+      (click)="login()">
+      <ion-spinner *ngIf="cargando" name="crescent" slot="start"></ion-spinner>
+      {{ cargando ? 'Ingresando...' : 'Entrar' }}
+    </ion-button>
+
+    <p class="device-id">
+      Dispositivo: <strong>{{ deviceId || '—' }}</strong>
+    </p>
+
+  </div>
+</ion-content>

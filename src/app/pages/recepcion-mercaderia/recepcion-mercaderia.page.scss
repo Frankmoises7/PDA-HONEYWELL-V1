@@ -1,0 +1,170 @@
+.rec-content {
+  --background: #f0f4f8;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  gap: 12px;
+
+  .empty-icon-wrap {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #e8f5e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    ion-icon { font-size: 38px; color: #66bb6a; }
+  }
+
+  .empty-title { font-size: 1.05rem; font-weight: 700; color: #333; margin: 0; }
+  .empty-sub   { font-size: 0.85rem; color: #888; text-align: center; padding: 0 32px; margin: 0; }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 6px;
+  font-size: 0.72rem;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  ion-icon { font-size: 0.9rem; color: #bbb; }
+}
+
+.sucursales-wrap {
+  padding: 0 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sucursal-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+
+  &.color-0 .sucursal-header { background: #1b5e20; }
+  &.color-1 .sucursal-header { background: #4a148c; }
+  &.color-2 .sucursal-header { background: #0d47a1; }
+  &.color-3 .sucursal-header { background: #b71c1c; }
+  &.color-4 .sucursal-header { background: #e65100; }
+}
+
+.sucursal-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #fff;
+}
+
+.sucursal-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  ion-icon { font-size: 0.95rem; color: #fff; }
+}
+
+.sucursal-info {
+  .sucursal-nombre {
+    margin: 0;
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+  .sucursal-count {
+    margin: 1px 0 0;
+    font-size: 0.68rem;
+    opacity: 0.82;
+  }
+}
+
+.recepciones-lista {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+// Botones de recepción — GRANDES y fáciles de tocar
+.rec-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  border-top: 1px solid #f0f0f0;
+  cursor: pointer;
+  text-align: left;
+  min-height: 54px;
+
+  &:active { background: #f1f8e9; }
+
+  .rec-btn-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+}
+
+.rec-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #e8f5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  ion-icon { font-size: 1.1rem; color: #388e3c; }
+}
+
+.rec-info {
+  display: flex;
+  flex-direction: column;
+
+  .rec-id {
+    font-size: 0.94rem;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .rec-fecha {
+    font-size: 0.72rem;
+    color: #888;
+    margin-top: 1px;
+  }
+}
+
+.rec-btn-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rec-badge {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #2e7d32;
+  background: #e8f5e9;
+  padding: 3px 8px;
+  border-radius: 7px;
+}
+
+.rec-arrow {
+  font-size: 1rem;
+  color: #bbb;
+}

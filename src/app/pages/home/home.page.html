@@ -1,0 +1,37 @@
+<ion-content [fullscreen]="true" class="home-content">
+  <div class="home-wrapper">
+
+    <div class="saludo-area">
+      <div class="avatar">{{ inicial }}</div>
+      <div>
+        <p class="saludo-label">Bienvenido</p>
+        <h2 class="saludo-nombre">{{ nombreCompleto }}</h2>
+      </div>
+    </div>
+
+    <div class="menu-grid">
+
+      <button class="menu-card card-precio" (click)="irAConsultaPrecio()">
+        <ion-icon name="pricetag-outline"></ion-icon>
+        <span>Consulta de Precio</span>
+      </button>
+
+      <button class="menu-card card-inventario" (click)="irAInventarios()">
+        <ion-icon name="list-outline"></ion-icon>
+        <span>Inventarios</span>
+      </button>
+
+      <button class="menu-card card-recepcion" (click)="irARecepcionMercaderia()">
+        <ion-icon name="cube-outline"></ion-icon>
+        <span>Recepción de Mercadería</span>
+      </button>
+
+    </div>
+
+    <button class="btn-logout" (click)="cerrarSesion()">
+      <ion-icon name="log-out-outline"></ion-icon>
+      Cerrar sesión
+    </button>
+
+  </div>
+</ion-content>

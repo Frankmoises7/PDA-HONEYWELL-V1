@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Recepciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="rec-content">
+  <!-- Sin recepciones -->
+  <div class="empty-state" *ngIf="recepcionesPorSucursal.length === 0">
+    <div class="empty-icon-wrap">
+      <ion-icon name="cube-outline"></ion-icon>
+    </div>
+    <p class="empty-title">Sin recepciones asignadas</p>
+    <p class="empty-sub">No tenés recepciones activas en este momento</p>
+  </div>
+
+  <!-- Lista por sucursal -->
+  <div class="sucursales-wrap" *ngIf="recepcionesPorSucursal.length > 0">
+
+    <div class="section-header">
+      <ion-icon name="cube-outline"></ion-icon>
+      <span>Selecciona una recepción para escanear</span>
+    </div>
+
+    <div
+      class="sucursal-card"
+      *ngFor="let item of recepcionesPorSucursal; let i = index"
+      [class]="'color-' + (i % 5)">
+
+      <div class="sucursal-header">
+        <div class="sucursal-avatar">
+          <ion-icon name="business-outline"></ion-icon>
+        </div>
+        <div class="sucursal-info">
+          <p class="sucursal-nombre">{{ item.sucursal.nombre_sucursal }}</p>
+          <p class="sucursal-count">
+            {{ item.recepciones.length }}
+            {{ item.recepciones.length === 1 ? 'recepción' : 'recepciones' }}
+            · {{ item.sucursal.codigo_sucursal }}
+          </p>
+        </div>
+      </div>
+
+      <div class="recepciones-lista">
+        <button
+          class="rec-btn"
+          *ngFor="let r of item.recepciones"
+          (click)="irAEscanearRecepcion(r)">
+
+          <div class="rec-btn-left">
+            <div class="rec-icon-wrap">
+              <ion-icon name="receipt-outline"></ion-icon>
+            </div>
+            <div class="rec-info">
+              <span class="rec-id">Recepción #{{ r.id }}</span>
+              <span class="rec-fecha">{{ r.fecha_creacion | date:'dd/MM/yy HH:mm' }}</span>
+            </div>
+          </div>
+
+          <div class="rec-btn-right">
+            <span class="rec-badge">Escanear</span>
+            <ion-icon name="chevron-forward-outline" class="rec-arrow"></ion-icon>
+          </div>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>

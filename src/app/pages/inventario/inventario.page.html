@@ -1,0 +1,331 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inventarios-disponibles" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Inventario #{{ idInventario }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <!-- Contador general + botón agregar manual (siempre visible) -->
+  <div class="resumen-bar">
+    <div class="resumen-left">
+      <ion-icon name="checkmark-circle" class="resumen-icon" *ngIf="inventarioArray.length > 0"></ion-icon>
+      <span *ngIf="inventarioArray.length > 0"><strong>{{ inventarioArray.length }}</strong> productos</span>
+      <span *ngIf="inventarioArray.length === 0" class="resumen-hint">Listo para escanear</span>
+    </div>
+    <button class="fab-manual" (click)="abrirAgregarManual()">
+      <ion-icon name="pencil-outline"></ion-icon>
+      Agregar manual
+    </button>
+  </div>
+
+  <!-- Estado vacío -->
+  <div class="empty-state" *ngIf="displayedInventarioArray.length === 0">
+    <div class="empty-scanner">
+      <ion-icon name="scan-outline"></ion-icon>
+    </div>
+    <p class="empty-title">Listo para escanear</p>
+    <p class="empty-sub">Apuntá el scanner a un código de barras<br>o usá "Agregar manual" para ingresar sin código</p>
+  </div>
+
+  <!-- Lista de productos escaneados -->
+  <div class="productos-list" *ngIf="displayedInventarioArray.length > 0">
+    <div
+      class="product-card"
+      (click)="editarCantidad(item)"
+      *ngFor="let item of displayedInventarioArray; trackBy: trackByIdProducto">
+      <div class="product-left">
+        <div class="product-id-badge">{{ item.idProducto }}</div>
+      </div>
+      <div class="product-right">
+        <div class="qty-bubble">{{ item.cantidad }}</div>
+        <ion-button
+          fill="clear"
+          class="edit-btn"
+          (click)="editarCantidad(item); $event.stopPropagation()">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <ion-infinite-scroll
+    (ionInfinite)="loadMore($event)"
+    threshold="150px"
+    *ngIf="displayedInventarioArray.length < inventarioArray.length">
+    <ion-infinite-scroll-content loadingSpinner="dots" loadingText="Cargando más...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
+
+
+  <!-- ═══════════════════════════════════════════
+       MODAL: Guardar cantidad nueva
+       El padding-bottom en el OVERLAY empuja la modal-card
+       hacia arriba exactamente la altura del teclado,
+       sin que el contenido salga de la pantalla.
+       ═══════════════════════════════════════════ -->
+  <div *ngIf="mostrarModal"
+       class="modal-overlay"
+       [style.padding-bottom.px]="keyboardOffset"
+       (click)="cancelarModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+
+      <div class="modal-pill"></div>
+
+      <div class="modal-header" [class.header-edit]="editando">
+        <div class="modal-header-icon">
+          <ion-icon [name]="editando ? 'create-outline' : 'add-circle-outline'"></ion-icon>
+        </div>
+        <div>
+          <h3>{{ editando ? 'Editar Cantidad' : 'Nuevo Escaneo' }}</h3>
+          <p class="modal-header-sub" *ngIf="!editando">Escaneado exitosamente</p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="product-detail-card">
+          <div class="detail-row">
+            <ion-icon name="cube-outline" class="detail-icon"></ion-icon>
+            <div>
+              <span class="detail-label">Producto</span>
+              <span class="detail-value">{{ nombreProducto || productoSeleccionadoNombre || '—' }}</span>
+            </div>
+          </div>
+          <div class="detail-row highlight" *ngIf="precio || productoSeleccionado?.precio_venta">
+            <ion-icon name="pricetag-outline" class="detail-icon accent"></ion-icon>
+            <div>
+              <span class="detail-label">Precio de venta</span>
+              <span class="detail-value price">${{ (precio || productoSeleccionado?.precio_venta || 0) | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cantidad-section">
+          <p class="cantidad-label">Ingresar cantidad</p>
+          <ion-item class="cantidad-item">
+            <ion-input
+              #cantidadInputRef
+              type="number"
+              inputmode="numeric"
+              [(ngModel)]="cantidad"
+              (ionFocus)="enableInput($event)"
+              clearInput
+              placeholder="0">
+            </ion-input>
+          </ion-item>
+        </div>
+      </div>
+
+      <div class="modal-footer two-col">
+        <ion-button expand="block" class="btn-guardar" (click)="guardarModal()">
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+          Guardar
+        </ion-button>
+        <ion-button expand="block" class="btn-cancelar" (click)="cancelarModal()">
+          Cancelar
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       MODAL: Código sin producto
+       ═══════════════════════════════════════════ -->
+  <div *ngIf="nuevoCodigo"
+       class="modal-overlay"
+       [style.padding-bottom.px]="keyboardOffset"
+       (click)="cancelarModal()">
+    <div class="modal-card modal-warning" (click)="$event.stopPropagation()">
+
+      <div class="modal-pill"></div>
+
+      <div class="modal-header header-warning">
+        <div class="modal-header-icon">
+          <ion-icon name="warning-outline"></ion-icon>
+        </div>
+        <div>
+          <h3>Código sin producto</h3>
+          <p class="modal-header-sub">Asigná un ID de producto</p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="product-detail-card">
+          <div class="detail-row">
+            <ion-icon name="barcode-outline" class="detail-icon"></ion-icon>
+            <div>
+              <span class="detail-label">Código escaneado</span>
+              <span class="detail-value mono">{{ codigoParaAsociar }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cantidad-section">
+          <p class="cantidad-label">ID del Producto</p>
+          <ion-item class="cantidad-item cantidad-item--text">
+            <ion-input
+              #idProductoInput
+              [(ngModel)]="idProductoManual"
+              type="text"
+              inputmode="text"
+              (ionFocus)="enableInput($event)"
+              clearInput
+              placeholder="Ej: 1234">
+            </ion-input>
+          </ion-item>
+        </div>
+      </div>
+
+      <div class="modal-footer two-col">
+        <ion-button expand="block" class="btn-guardar" (click)="guardarCodigo()">
+          <ion-icon name="link-outline" slot="start"></ion-icon>
+          Guardar
+        </ion-button>
+        <ion-button expand="block" class="btn-cancelar" (click)="cancelarModal()">
+          Cancelar
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       MODAL: Sumar o editar cantidad existente
+       ═══════════════════════════════════════════ -->
+  <div *ngIf="sumarOEditar"
+       class="modal-overlay"
+       [style.padding-bottom.px]="keyboardOffset"
+       (click)="cancelarModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+
+      <div class="modal-pill"></div>
+
+      <div class="modal-header header-warning">
+        <div class="modal-header-icon">
+          <ion-icon name="repeat-outline"></ion-icon>
+        </div>
+        <div>
+          <h3>Producto ya escaneado</h3>
+          <p class="modal-header-sub">¿Sumar o reemplazar?</p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="product-detail-card">
+          <div class="detail-row">
+            <ion-icon name="cube-outline" class="detail-icon"></ion-icon>
+            <div>
+              <span class="detail-label">Producto</span>
+              <span class="detail-value">{{ productoSeleccionadoNombre }}</span>
+            </div>
+          </div>
+          <div class="detail-row highlight" *ngIf="precio">
+            <ion-icon name="pricetag-outline" class="detail-icon accent"></ion-icon>
+            <div>
+              <span class="detail-label">Precio</span>
+              <span class="detail-value price">${{ precio | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cantidad-section">
+          <p class="cantidad-label">Nueva cantidad</p>
+          <ion-item class="cantidad-item">
+            <ion-input
+              #cantidadSoEInputRef
+              type="number"
+              inputmode="numeric"
+              [(ngModel)]="cantidadSoE"
+              (ionFocus)="enableInput($event)"
+              clearInput
+              placeholder="0">
+            </ion-input>
+          </ion-item>
+        </div>
+      </div>
+
+      <div class="modal-footer two-col">
+        <ion-button expand="block" (click)="guardarSumarOEditar('sumar')">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Sumar
+        </ion-button>
+        <ion-button expand="block" color="warning" (click)="guardarSumarOEditar('editar')">
+          <ion-icon name="swap-horizontal-outline" slot="start"></ion-icon>
+          Reemplazar
+        </ion-button>
+        <ion-button expand="full" fill="clear" color="medium" (click)="cancelarModal()" class="btn-cancel-full">
+          Cancelar
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       MODAL: Agregar producto manual
+       ═══════════════════════════════════════════ -->
+  <div *ngIf="agregarManual"
+       class="modal-overlay"
+       [style.padding-bottom.px]="keyboardOffset"
+       (click)="cancelarModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+
+      <div class="modal-pill"></div>
+
+      <div class="modal-header">
+        <div class="modal-header-icon">
+          <ion-icon name="pencil-outline"></ion-icon>
+        </div>
+        <div>
+          <h3>Agregar Manual</h3>
+          <p class="modal-header-sub">Para productos sin código de barras</p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="cantidad-section">
+          <p class="cantidad-label">ID del Producto</p>
+          <ion-item class="cantidad-item cantidad-item--text">
+            <ion-input
+              [(ngModel)]="idProductoManual"
+              type="text"
+              inputmode="text"
+              (ionFocus)="enableInput($event)"
+              clearInput
+              placeholder="Ej: 1234 o ABC-01">
+            </ion-input>
+          </ion-item>
+        </div>
+
+        <div class="cantidad-section">
+          <p class="cantidad-label">Cantidad</p>
+          <ion-item class="cantidad-item">
+            <ion-input
+              [(ngModel)]="cantidadManual"
+              type="number"
+              inputmode="numeric"
+              (ionFocus)="enableInput($event)"
+              clearInput
+              placeholder="0">
+            </ion-input>
+          </ion-item>
+        </div>
+      </div>
+
+      <div class="modal-footer two-col">
+        <ion-button expand="block" class="btn-guardar" (click)="guardarProductoManual()">
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          Guardar
+        </ion-button>
+        <ion-button expand="block" class="btn-cancelar" (click)="cancelarModal()">
+          Cancelar
+        </ion-button>
+      </div>
+    </div>
+  </div>
+

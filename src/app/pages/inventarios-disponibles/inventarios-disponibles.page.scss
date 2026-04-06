@@ -1,0 +1,154 @@
+.inv-content {
+  --background: #f0f4f8;
+}
+
+// ─── Estado vacío ──────────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  gap: 12px;
+
+  .empty-icon-wrap {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #e8eaf6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    ion-icon { font-size: 38px; color: #7986cb; }
+  }
+
+  .empty-title { font-size: 1.05rem; font-weight: 700; color: #333; margin: 0; }
+  .empty-sub   { font-size: 0.85rem; color: #888; text-align: center; padding: 0 32px; margin: 0; }
+}
+
+// ─── Encabezado de sección ─────────────────────────────────────────────────
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 6px;
+  font-size: 0.72rem;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  ion-icon { font-size: 0.9rem; color: #bbb; }
+}
+
+// ─── Contenedor ────────────────────────────────────────────────────────────
+.sucursales-wrap {
+  padding: 0 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// ─── Card de sucursal ──────────────────────────────────────────────────────
+.sucursal-card {
+  border-radius: 16px;
+  overflow: hidden;
+  // Sombra simple sin blur pesado
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+
+  &.color-0 .sucursal-header { background: #1565c0; }
+  &.color-1 .sucursal-header { background: #2e7d32; }
+  &.color-2 .sucursal-header { background: #6a1b9a; }
+  &.color-3 .sucursal-header { background: #bf360c; }
+  &.color-4 .sucursal-header { background: #00695c; }
+}
+
+// Header compacto — solo referencia visual, el peso está en los botones
+.sucursal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;   // ← más chico que antes (era 16px 18px)
+  color: #fff;
+}
+
+.sucursal-avatar {
+  width: 34px;           // ← reducido (era 46px)
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  ion-icon { font-size: 1.1rem; color: #fff; }
+}
+
+.sucursal-info {
+  .sucursal-nombre {
+    margin: 0;
+    font-size: 0.92rem;  // ← más chico (era 1.1rem)
+    font-weight: 700;
+  }
+  .sucursal-count {
+    margin: 1px 0 0;
+    font-size: 0.72rem;
+    opacity: 0.82;
+  }
+}
+
+// ─── Botones de inventario — estos son los GRANDES ─────────────────────────
+.inventarios-lista {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.inv-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 18px;    // ← más alto (era 14px)
+  border: none;
+  background: transparent;
+  border-top: 1px solid #f0f0f0;
+  cursor: pointer;
+  text-align: left;
+
+  &:active { background: #f5f7ff; }
+
+  .inv-btn-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .inv-icon {
+    font-size: 1.6rem;   // ← más grande
+    color: #7986cb;
+    flex-shrink: 0;
+  }
+
+  .inv-nombre {
+    display: block;
+    font-size: 1.1rem;   // ← más grande (era 0.98rem)
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+
+  .inv-id {
+    display: block;
+    font-size: 0.78rem;
+    color: #aaa;
+    font-family: monospace;
+    margin-top: 2px;
+  }
+
+  .inv-arrow {
+    font-size: 1.3rem;
+    color: #bbb;
+    flex-shrink: 0;
+  }
+}

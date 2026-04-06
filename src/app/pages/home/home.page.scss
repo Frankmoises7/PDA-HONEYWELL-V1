@@ -1,0 +1,107 @@
+.home-content {
+  --background: #f0f4f8;
+}
+
+.home-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 24px 20px;
+  gap: 24px;
+}
+
+.saludo-area {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+
+  .avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #1a237e;
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .saludo-label {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .saludo-nombre {
+    margin: 2px 0 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+}
+
+.menu-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.menu-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 20px;
+  border: none;
+  border-radius: 16px;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transition: transform 0.1s, box-shadow 0.1s;
+
+  &:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  ion-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  &.card-precio    { background: linear-gradient(135deg, #1565c0, #1e88e5); }
+  &.card-inventario { background: linear-gradient(135deg, #2e7d32, #43a047); }
+  &.card-recepcion  { background: linear-gradient(135deg, #6a1b9a, #8e24aa); }
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+  color: #c62828;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+
+  ion-icon { font-size: 1.3rem; }
+}

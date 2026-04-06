@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Inventarios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="inv-content">
+
+  <!-- Sin sucursales -->
+  <div class="empty-state" *ngIf="sucursalesConInventario.length === 0">
+    <div class="empty-icon-wrap">
+      <ion-icon name="file-tray-outline"></ion-icon>
+    </div>
+    <p class="empty-title">Sin inventarios activos</p>
+    <p class="empty-sub">No hay inventarios disponibles para tu usuario</p>
+  </div>
+
+  <!-- Lista de sucursales con inventario -->
+  <div class="sucursales-wrap" *ngIf="sucursalesConInventario.length > 0">
+
+    <div class="section-header">
+      <ion-icon name="location-outline"></ion-icon>
+      <span>Selecciona un inventario para comenzar</span>
+    </div>
+
+    <div
+      class="sucursal-card"
+      *ngFor="let s of sucursalesConInventario; let i = index"
+      [class]="'color-' + (i % 5)">
+
+      <div class="sucursal-header">
+        <div class="sucursal-avatar">
+          <ion-icon name="storefront-outline"></ion-icon>
+        </div>
+        <div class="sucursal-info">
+          <p class="sucursal-nombre">{{ s.nombre_sucursal }}</p>
+          <p class="sucursal-count">
+            {{ getInventariosDeSucursal(s.id_sucursal).length }}
+            {{ getInventariosDeSucursal(s.id_sucursal).length === 1 ? 'inventario' : 'inventarios' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="inventarios-lista">
+        <button
+          class="inv-btn"
+          *ngFor="let inv of getInventariosDeSucursal(s.id_sucursal)"
+          (click)="abrirInventario(inv, s)">
+          <div class="inv-btn-left">
+            <ion-icon name="clipboard-outline" class="inv-icon"></ion-icon>
+            <div>
+              <span class="inv-nombre">{{ inv.datos.nombre || ('Inventario #' + inv.datos.id) }}</span>
+              <span class="inv-id">#{{ inv.datos.id }}</span>
+            </div>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="inv-arrow"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>

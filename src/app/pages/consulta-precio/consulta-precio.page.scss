@@ -1,0 +1,145 @@
+.scan-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  color: #aaa;
+
+  .scan-icon {
+    font-size: 96px;
+    color: #c8d0ff;
+    margin-bottom: 16px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .scan-text {
+    font-size: 1.2rem;
+    color: #666;
+    font-weight: 500;
+  }
+
+  .scan-sub {
+    font-size: 0.9rem;
+    color: #999;
+    margin-top: 8px;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.95); }
+}
+
+// Modal
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: #1a237e;
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &.error {
+    background: #c62828;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  .result-icon {
+    font-size: 28px;
+  }
+}
+
+.modal-body {
+  padding: 16px;
+}
+
+.error-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+
+  .error-search-icon {
+    font-size: 48px;
+    color: #e57373;
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #555;
+    text-align: center;
+  }
+
+  .codigo-error {
+    font-size: 0.85rem;
+    color: #999;
+    font-family: monospace;
+  }
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 4px;
+  border-bottom: 1px solid #f0f0f0;
+
+  &:last-child { border-bottom: none; }
+
+  .info-label {
+    font-size: 0.72rem;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .info-value {
+    font-size: 1rem;
+    color: #1a1a1a;
+    font-weight: 500;
+
+    &.nombre { font-size: 1.05rem; }
+    &.mono { font-family: monospace; }
+    &.small { font-size: 0.85rem; }
+    &.precio {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #1a237e;
+    }
+  }
+}
+
+.precio-row {
+  background: #f5f7ff;
+  border-radius: 8px;
+  padding: 10px 8px;
+  margin: 8px 0;
+  border-bottom: none !important;
+}
+
+.modal-footer {
+  padding: 8px 16px 20px;
+}
