@@ -1,10 +1,10 @@
 import {
-  Component, ViewChild, OnInit, OnDestroy,
+  Component, ViewChild, ElementRef, OnInit, OnDestroy,
   ChangeDetectionStrategy, ChangeDetectorRef, NgZone
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { IonInput, Platform } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Keyboard } from '@capacitor/keyboard';
@@ -14,6 +14,7 @@ import { InventarioService } from 'src/app/services/inventario.service';
 import { AlertaService } from 'src/app/services/alerta.service';
 import { UserService } from 'src/app/services/user.service';
 import { HoneywellScannerService } from 'src/app/services/honeywell-scanner.service';
+import { DeviceProfileService } from 'src/app/services/device-profile.service';
 
 /** Altura en px que sube el modal cuando aparece el teclado */
 
@@ -63,6 +64,7 @@ export class InventarioPage implements OnInit, OnDestroy {
 
   agregarManual = false;
   cantidadManual: number | '' = '';
+  esQ500 = true;
 
   keyboardOffset = 0;
   private readonly usarOffsetTeclado = Capacitor.getPlatform() === 'ios';
@@ -73,9 +75,9 @@ export class InventarioPage implements OnInit, OnDestroy {
   private kbHideSub: any;
   private appStateSub: any;
 
-  @ViewChild('cantidadInputRef') cantidadInputRef: IonInput;
-  @ViewChild('idProductoInput') idProductoInput: IonInput;
-  @ViewChild('cantidadSoEInputRef') cantidadSoEInputRef: IonInput;
+  @ViewChild('cantidadInputRef') cantidadInputRef: ElementRef<HTMLInputElement>;
+  @ViewChild('idProductoInput') idProductoInput: ElementRef<HTMLInputElement>;
+  @ViewChild('cantidadSoEInputRef') cantidadSoEInputRef: ElementRef<HTMLInputElement>;
 
   constructor(
     private route: ActivatedRoute,
@@ -87,7 +89,8 @@ export class InventarioPage implements OnInit, OnDestroy {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
-    private scanner: HoneywellScannerService
+    private scanner: HoneywellScannerService,
+    private deviceProfile: DeviceProfileService
   ) {
     const storedUser = this.user.getUsuario();
     this.usuario = storedUser?.datos;
@@ -102,7 +105,11 @@ export class InventarioPage implements OnInit, OnDestroy {
     this.refrescarProductos();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const perfil = await this.deviceProfile.getProfile();
+    this.esQ500 = perfil !== 'honeywell';
+    this.cdr.markForCheck();
+
     this.backSub = this.platform.backButton.subscribeWithPriority(10, () => {
       if (this.mostrarModal || this.sumarOEditar || this.nuevoCodigo || this.agregarManual) {
         this.cancelarModal();
@@ -161,7 +168,6 @@ export class InventarioPage implements OnInit, OnDestroy {
     this.kbShowSub?.remove?.();
     this.kbHideSub?.remove?.();
     this.appStateSub?.remove?.();
-    Keyboard.removeAllListeners();
   }
 
   ngAfterViewInit(): void {
@@ -181,7 +187,7 @@ export class InventarioPage implements OnInit, OnDestroy {
         if (data.resultado === 'noex') {
           this.nuevoCodigo = true;
           this.codigoParaAsociar = codigo;
-          setTimeout(() => this.idProductoInput?.setFocus(), 400);
+          setTimeout(() => this.idProductoInput?.nativeElement?.focus(), 400);
           return;
         }
 
@@ -425,34 +431,23 @@ export class InventarioPage implements OnInit, OnDestroy {
 
   enableInput(event: any): void {
     const input = event.target as HTMLInputElement;
-    if (input) {
-      input.removeAttribute('readonly');
-    }
+    input.removeAttribute('readonly');
   }
 
   /**
-   * Foco + teclado numérico inmediato.
-   * Espera el mínimo indispensable para que Angular renderice el modal.
+   * Foco en el input nativo. Espera a que Angular renderice el modal.
    */
-  private async focusCantidadConTeclado(getRef: () => IonInput | undefined, delayMs = 80): Promise<void> {
+  private async focusCantidadConTeclado(getRef: () => ElementRef<HTMLInputElement> | undefined, delayMs = 80): Promise<void> {
     this.cdr.markForCheck();
     await new Promise(r => setTimeout(r, delayMs));
     for (let i = 0; i < 8; i++) {
-      try {
-        const ref = getRef();
-        if (!ref) {
-          await new Promise(r => setTimeout(r, 60));
-          continue;
-        }
-
-        await ref.setFocus();
-        const nativeInput = await ref.getInputElement().catch(() => undefined);
-        nativeInput?.removeAttribute('readonly');
-        nativeInput?.select?.();
+      const el = getRef()?.nativeElement;
+      if (el) {
+        el.focus();
+        el.select?.();
         return;
-      } catch {
-        await new Promise(r => setTimeout(r, 60));
       }
+      await new Promise(r => setTimeout(r, 60));
     }
   }
 

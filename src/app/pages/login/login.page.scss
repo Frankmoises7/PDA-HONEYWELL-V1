@@ -28,25 +28,32 @@
 
 .field-item {
   width: 100%;
-  --background: #ffffff;
-  --border-radius: 10px;
-  --padding-start: 14px;
-  --inner-padding-end: 14px;
+  background: #ffffff;
   border-radius: 10px;
+  padding: 10px 14px 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
-  ion-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #555;
-  }
+.field-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
 
-  ion-input {
-    font-size: 1.2rem;
-    --padding-top: 6px;
-    --padding-bottom: 6px;
-  }
+.native-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1.2rem;
+  color: #111;
+  padding: 4px 0;
+  font-family: inherit;
+
+  &::placeholder { color: #bbb; }
 }
 
 .btn-login {

@@ -51,8 +51,10 @@
     "@types/jasmine": "~5.1.0",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
     "@typescript-eslint/parser": "^8.18.0",
+    "angular-eslint": "^19.8.1",
     "eslint": "^9.16.0",
-    "typescript": "~5.6.3"
+    "typescript": "~5.6.3",
+    "typescript-eslint": "^8.58.1"
   },
   "description": "App PDA Honeywell EDA51 - Inventarios y Recepción"
 }

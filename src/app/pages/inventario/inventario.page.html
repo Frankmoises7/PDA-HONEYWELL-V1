@@ -28,7 +28,7 @@
       <ion-icon name="scan-outline"></ion-icon>
     </div>
     <p class="empty-title">Listo para escanear</p>
-    <p class="empty-sub">Apuntá el scanner a un código de barras<br>o usá "Agregar manual" para ingresar sin código</p>
+    <p class="empty-sub">Apunta el scanner a un código de barras<br>o usa "Agregar manual" para ingresar sin código</p>
   </div>
 
   <!-- Lista de productos escaneados -->
@@ -106,17 +106,15 @@
 
         <div class="cantidad-section">
           <p class="cantidad-label">Ingresar cantidad</p>
-          <ion-item class="cantidad-item">
-            <ion-input
-              #cantidadInputRef
-              type="number"
-              inputmode="numeric"
-              [(ngModel)]="cantidad"
-              (ionFocus)="enableInput($event)"
-              clearInput
-              placeholder="0">
-            </ion-input>
-          </ion-item>
+          <input
+            #cantidadInputRef
+            class="native-input native-input--number"
+            type="number"
+            [attr.inputmode]="esQ500 ? 'none' : 'numeric'"
+            [attr.readonly]="esQ500 ? '' : null"
+            (focus)="enableInput($event)"
+            [(ngModel)]="cantidad"
+            placeholder="0">
         </div>
       </div>
 
@@ -167,17 +165,15 @@
 
         <div class="cantidad-section">
           <p class="cantidad-label">ID del Producto</p>
-          <ion-item class="cantidad-item cantidad-item--text">
-            <ion-input
-              #idProductoInput
-              [(ngModel)]="idProductoManual"
-              type="text"
-              inputmode="text"
-              (ionFocus)="enableInput($event)"
-              clearInput
-              placeholder="Ej: 1234">
-            </ion-input>
-          </ion-item>
+          <input
+            #idProductoInput
+            class="native-input native-input--text"
+            [(ngModel)]="idProductoManual"
+            type="text"
+            [attr.inputmode]="esQ500 ? 'none' : 'text'"
+            [attr.readonly]="esQ500 ? '' : null"
+            (focus)="enableInput($event)"
+            placeholder="Ej: 1234">
         </div>
       </div>
 
@@ -235,17 +231,15 @@
 
         <div class="cantidad-section">
           <p class="cantidad-label">Nueva cantidad</p>
-          <ion-item class="cantidad-item">
-            <ion-input
-              #cantidadSoEInputRef
-              type="number"
-              inputmode="numeric"
-              [(ngModel)]="cantidadSoE"
-              (ionFocus)="enableInput($event)"
-              clearInput
-              placeholder="0">
-            </ion-input>
-          </ion-item>
+          <input
+            #cantidadSoEInputRef
+            class="native-input native-input--number"
+            type="number"
+            [attr.inputmode]="esQ500 ? 'none' : 'numeric'"
+            [attr.readonly]="esQ500 ? '' : null"
+            (focus)="enableInput($event)"
+            [(ngModel)]="cantidadSoE"
+            placeholder="0">
         </div>
       </div>
 
@@ -290,30 +284,26 @@
       <div class="modal-body">
         <div class="cantidad-section">
           <p class="cantidad-label">ID del Producto</p>
-          <ion-item class="cantidad-item cantidad-item--text">
-            <ion-input
-              [(ngModel)]="idProductoManual"
-              type="text"
-              inputmode="text"
-              (ionFocus)="enableInput($event)"
-              clearInput
-              placeholder="Ej: 1234 o ABC-01">
-            </ion-input>
-          </ion-item>
+          <input
+            class="native-input native-input--text"
+            [(ngModel)]="idProductoManual"
+            type="text"
+            [attr.inputmode]="esQ500 ? 'none' : 'text'"
+            [attr.readonly]="esQ500 ? '' : null"
+            (focus)="enableInput($event)"
+            placeholder="Ej: 1234 o ABC-01">
         </div>
 
         <div class="cantidad-section">
           <p class="cantidad-label">Cantidad</p>
-          <ion-item class="cantidad-item">
-            <ion-input
-              [(ngModel)]="cantidadManual"
-              type="number"
-              inputmode="numeric"
-              (ionFocus)="enableInput($event)"
-              clearInput
-              placeholder="0">
-            </ion-input>
-          </ion-item>
+          <input
+            class="native-input native-input--number"
+            [(ngModel)]="cantidadManual"
+            type="number"
+            [attr.inputmode]="esQ500 ? 'none' : 'numeric'"
+            [attr.readonly]="esQ500 ? '' : null"
+            (focus)="enableInput($event)"
+            placeholder="0">
         </div>
       </div>
 

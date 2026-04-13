@@ -73,17 +73,16 @@
           <span class="info-label">Precio</span>
           <span class="info-value precio">${{ precio | number:'1.0-0' }}</span>
         </div>
-        <ion-item class="cantidad-item">
-          <ion-label position="stacked">Cantidad</ion-label>
-          <ion-input
-            #cantidadInputRef
-            type="number"
-            inputmode="numeric"
-            [(ngModel)]="cantidad"
-            (ionFocus)="enableInput($event)"
-            clearInput>
-          </ion-input>
-        </ion-item>
+        <label class="cantidad-label-inline">Cantidad</label>
+        <input
+          #cantidadInputRef
+          class="native-input native-input--number"
+          type="number"
+          [attr.inputmode]="esQ500 ? 'none' : 'numeric'"
+          [attr.readonly]="esQ500 ? '' : null"
+          (focus)="enableInput($event)"
+          [(ngModel)]="cantidad"
+          placeholder="0">
       </div>
       <div class="modal-footer two-col">
         <ion-button expand="block" (click)="guardarCantidad()" class="btn-guardar">
@@ -115,17 +114,16 @@
           <span class="info-label">Cantidad actual</span>
           <span class="info-value badge-qty-lg">{{ cantidadEscaneada }}</span>
         </div>
-        <ion-item class="cantidad-item">
-          <ion-label position="stacked">Nueva cantidad</ion-label>
-          <ion-input
-            #cantidadSoEInputRef
-            type="number"
-            inputmode="numeric"
-            [(ngModel)]="cantidadSoE"
-            (ionFocus)="enableInput($event)"
-            clearInput>
-          </ion-input>
-        </ion-item>
+        <label class="cantidad-label-inline">Nueva cantidad</label>
+        <input
+          #cantidadSoEInputRef
+          class="native-input native-input--number"
+          type="number"
+          [attr.inputmode]="esQ500 ? 'none' : 'numeric'"
+          [attr.readonly]="esQ500 ? '' : null"
+          (focus)="enableInput($event)"
+          [(ngModel)]="cantidadSoE"
+          placeholder="0">
       </div>
       <div class="modal-footer two-buttons">
         <ion-button expand="block" (click)="guardarSumarOEditar('sumar')">
@@ -153,27 +151,25 @@
         <h3>Agregar Manual</h3>
       </div>
       <div class="modal-body">
-        <ion-item class="cantidad-item cantidad-item--text">
-          <ion-label position="stacked">ID del Producto</ion-label>
-          <ion-input
-            [(ngModel)]="idProductoManual"
-            type="text"
-            inputmode="text"
-            (ionFocus)="enableInput($event)"
-            clearInput
-            placeholder="Ej: 1234 o ABC-01">
-          </ion-input>
-        </ion-item>
-        <ion-item class="cantidad-item">
-          <ion-label position="stacked">Cantidad</ion-label>
-          <ion-input
-            [(ngModel)]="cantidadManual"
-            type="number"
-            inputmode="numeric"
-            (ionFocus)="enableInput($event)"
-            clearInput>
-          </ion-input>
-        </ion-item>
+        <label class="cantidad-label-inline">ID del Producto</label>
+        <input
+          class="native-input native-input--text"
+          [(ngModel)]="idProductoManual"
+          type="text"
+          [attr.inputmode]="esQ500 ? 'none' : 'text'"
+          [attr.readonly]="esQ500 ? '' : null"
+          (focus)="enableInput($event)"
+          placeholder="Ej: 1234 o ABC-01">
+
+        <label class="cantidad-label-inline" style="margin-top:12px">Cantidad</label>
+        <input
+          class="native-input native-input--number"
+          [(ngModel)]="cantidadManual"
+          type="number"
+          [attr.inputmode]="esQ500 ? 'none' : 'numeric'"
+          [attr.readonly]="esQ500 ? '' : null"
+          (focus)="enableInput($event)"
+          placeholder="0">
       </div>
       <div class="modal-footer two-col">
         <ion-button expand="block" (click)="guardarProductoManual()" class="btn-guardar">

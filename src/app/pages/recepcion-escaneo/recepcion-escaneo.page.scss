@@ -220,22 +220,36 @@
   }
 }
 
-.cantidad-item {
-  margin-top: 8px;
-  --background: #f5f7ff;
-  --border-radius: 8px;
-  border-radius: 8px;
-  border: 2px solid #c5cae9;
+.cantidad-label-inline {
+  display: block;
+  font-size: 0.72rem;
+  color: #888;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
 
-  ion-input {
+.native-input {
+  display: block;
+  width: 100%;
+  border: 2px solid #c5cae9;
+  border-radius: 8px;
+  outline: none;
+  background: #f5f7ff;
+  padding: 10px 14px;
+  font-family: inherit;
+  color: #1a237e;
+  box-sizing: border-box;
+
+  &::placeholder { color: #bbb; }
+
+  &.native-input--number {
     font-size: 1.8rem;
     font-weight: 700;
     text-align: center;
-    --padding-top: 8px;
-    --padding-bottom: 8px;
   }
 
-  &.cantidad-item--text ion-input {
+  &.native-input--text {
     font-size: 1.15rem;
     font-weight: 600;
     text-align: left;

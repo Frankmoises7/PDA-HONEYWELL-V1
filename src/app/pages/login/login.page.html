@@ -5,30 +5,34 @@
 
     <h2 class="titulo-login">Iniciar sesión</h2>
 
-    <ion-item class="field-item">
-      <ion-label position="stacked">RUT</ion-label>
-      <ion-input
+    <div class="field-item">
+      <label class="field-label">RUT</label>
+      <input
+        class="native-input"
         [(ngModel)]="rut"
         (ngModelChange)="rut = formatearRut(rut)"
         type="text"
         autocomplete="off"
         autocorrect="off"
-        inputmode="text"
+        spellcheck="false"
+        [attr.inputmode]="esQ500 ? 'none' : 'text'"
+        [attr.readonly]="esQ500 ? '' : null"
+        (focus)="enableInput($event)"
         (keydown.enter)="login()">
-      </ion-input>
-    </ion-item>
+    </div>
 
-    <ion-item class="field-item">
-      <ion-label position="stacked">Contraseña</ion-label>
-      <ion-input
+    <div class="field-item">
+      <label class="field-label">Contraseña</label>
+      <input
+        class="native-input"
         [(ngModel)]="password"
         type="password"
         autocomplete="off"
-        autocorrect="off"
-        inputmode="text"
+        [attr.inputmode]="esQ500 ? 'none' : 'text'"
+        [attr.readonly]="esQ500 ? '' : null"
+        (focus)="enableInput($event)"
         (keydown.enter)="login()">
-      </ion-input>
-    </ion-item>
+    </div>
 
     <ion-button
       expand="block"

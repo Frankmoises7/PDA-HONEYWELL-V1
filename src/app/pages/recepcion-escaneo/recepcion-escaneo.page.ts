@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, ViewChild, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonInput, Platform } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Keyboard } from '@capacitor/keyboard';
@@ -12,6 +12,7 @@ import { InventarioService } from 'src/app/services/inventario.service';
 import { AlertaService } from 'src/app/services/alerta.service';
 import { UserService } from 'src/app/services/user.service';
 import { HoneywellScannerService } from 'src/app/services/honeywell-scanner.service';
+import { DeviceProfileService } from 'src/app/services/device-profile.service';
 
 @Component({
   selector: 'app-recepcion-escaneo',
@@ -45,6 +46,7 @@ export class RecepcionEscaneoPage implements OnInit, OnDestroy {
   cantidadManual: number = null;
 
   escaneoActivo = true;
+  esQ500 = true;
   keyboardOffset = 0;
   private readonly usarOffsetTeclado = Capacitor.getPlatform() === 'ios';
 
@@ -55,8 +57,8 @@ export class RecepcionEscaneoPage implements OnInit, OnDestroy {
   private appStateSub: any;
   private abrirManualAlEntrar = false;
 
-  @ViewChild('cantidadInputRef') cantidadInputRef: IonInput;
-  @ViewChild('cantidadSoEInputRef') cantidadSoEInputRef: IonInput;
+  @ViewChild('cantidadInputRef') cantidadInputRef: ElementRef<HTMLInputElement>;
+  @ViewChild('cantidadSoEInputRef') cantidadSoEInputRef: ElementRef<HTMLInputElement>;
 
   constructor(
     private route: ActivatedRoute,
@@ -67,10 +69,14 @@ export class RecepcionEscaneoPage implements OnInit, OnDestroy {
     private ngZone: NgZone,
     private platform: Platform,
     private location: Location,
-    private scanner: HoneywellScannerService
+    private scanner: HoneywellScannerService,
+    private deviceProfile: DeviceProfileService
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const perfil = await this.deviceProfile.getProfile();
+    this.esQ500 = perfil !== 'honeywell';
+
     this.usuario = this.user.getUsuario()?.datos || {};
 
     this.route.queryParams.subscribe(params => {
@@ -146,7 +152,6 @@ export class RecepcionEscaneoPage implements OnInit, OnDestroy {
     this.kbShowSub?.remove?.();
     this.kbHideSub?.remove?.();
     this.appStateSub?.remove?.();
-    Keyboard.removeAllListeners();
   }
 
   ngAfterViewInit(): void {
@@ -204,7 +209,7 @@ export class RecepcionEscaneoPage implements OnInit, OnDestroy {
           this.productoSeleccionadoNombre = yaEscaneado?.nombre || nombreProd;
           this.precio = yaEscaneado?.precio_venta || precioProd;
           this.cantidadSoE = null;
-        this.focusCantidadInmediato(this.cantidadSoEInputRef);
+          this.focusCantidadInmediato(() => this.cantidadSoEInputRef);
           return;
         }
 
@@ -220,7 +225,7 @@ export class RecepcionEscaneoPage implements OnInit, OnDestroy {
         this.cantidad = null;
         this.mostrarModal = true;
 
-        this.focusCantidadInmediato(this.cantidadInputRef);
+        this.focusCantidadInmediato(() => this.cantidadInputRef);
       });
     });
   }
@@ -345,7 +350,7 @@ export class RecepcionEscaneoPage implements OnInit, OnDestroy {
           this.precio = producto.precio_venta || 0;
           this.cantidadEscaneada = Number(productoEscaneado.cantidad);
           this.cantidadSoE = null;
-          this.focusCantidadInmediato(this.cantidadSoEInputRef);
+          this.focusCantidadInmediato(() => this.cantidadSoEInputRef);
           return;
         }
 
@@ -391,12 +396,17 @@ export class RecepcionEscaneoPage implements OnInit, OnDestroy {
     };
     this.cantidad = Number(this.productoSeleccionado.cantidad ?? 0);
 
-        this.focusCantidadInmediato(this.cantidadInputRef);
+    this.focusCantidadInmediato(() => this.cantidadInputRef);
   }
 
   obtenerCantidadPedida(idProducto: string | number): number {
     const prod = this.productosPedidos.find(p => String(p.id_producto) === String(idProducto));
     return Number(prod?.cantidad_pedida || 0);
+  }
+
+  enableInput(event: any): void {
+    const input = event.target as HTMLInputElement;
+    input.removeAttribute('readonly');
   }
 
   cancelarModal(): void {
@@ -418,22 +428,22 @@ export class RecepcionEscaneoPage implements OnInit, OnDestroy {
     this.cantidadManual = null;
   }
 
-  enableInput(event: any): void {
-    const input = event?.target as HTMLInputElement;
-    if (!input) return;
-    input.removeAttribute('readonly');
-  }
-
   private getIdStr(p: any): string {
     const id = p?.id_producto ?? p?.idProducto ?? p?.id ?? '';
     return id != null ? String(id) : '';
   }
 
-  /** Foco + teclado en ~80ms, mínimo delay para que Angular renderice el modal */
-  private async focusCantidadInmediato(ref?: IonInput): Promise<void> {
-    await new Promise(r => setTimeout(r, 80));
-    try {
-      await ref?.setFocus();
-    } catch { /* noop */ }
+  /** Foco robusto tras render del modal (mismo patrón que inventario). */
+  private async focusCantidadInmediato(getRef: () => ElementRef<HTMLInputElement> | undefined, delayMs = 80): Promise<void> {
+    await new Promise(r => setTimeout(r, delayMs));
+    for (let i = 0; i < 8; i++) {
+      const el = getRef()?.nativeElement;
+      if (el) {
+        el.focus();
+        el.select?.();
+        return;
+      }
+      await new Promise(r => setTimeout(r, 60));
+    }
   }
 }

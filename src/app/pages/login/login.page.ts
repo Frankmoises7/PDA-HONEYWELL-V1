@@ -5,6 +5,7 @@ import { Device } from '@capacitor/device';
 import { UserService } from '../../services/user.service';
 import { TokenStorageService } from '../../services/token.service';
 import { AlertaService } from 'src/app/services/alerta.service';
+import { DeviceProfileService } from 'src/app/services/device-profile.service';
 
 @Component({
   selector: 'app-login',
@@ -17,15 +18,20 @@ export class LoginPage implements OnInit {
   password = '';
   cargando = false;
   deviceId = '';
+  esQ500 = true;
 
   constructor(
     private router: Router,
     private userService: UserService,
     private tokenService: TokenStorageService,
-    private alertas: AlertaService
+    private alertas: AlertaService,
+    private deviceProfile: DeviceProfileService
   ) {}
 
   async ngOnInit(): Promise<void> {
+    const perfil = await this.deviceProfile.getProfile();
+    this.esQ500 = perfil !== 'honeywell';
+
     await this.cargarIdDispositivo();
     if (this.userService.getUsuario()) {
       this.router.navigate(['/home']);
@@ -95,5 +101,10 @@ export class LoginPage implements OnInit {
         this.cargando = false;
       }
     });
+  }
+
+  enableInput(event: any): void {
+    const input = event.target as HTMLInputElement;
+    input.removeAttribute('readonly');
   }
 }
