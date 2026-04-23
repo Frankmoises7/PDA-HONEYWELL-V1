@@ -182,65 +182,47 @@ export class InventarioPage implements OnInit, OnDestroy {
     const datos = new FormData();
     datos.append('codigoBarra', codigo);
 
-    this.inventS.checkCodigoBarra(datos).subscribe({
-      next: data => {
-        this.ngZone.run(() => {
-          if (data?.resultado === 'noex') {
-            this.nuevoCodigo = true;
-            this.codigoParaAsociar = codigo;
-            setTimeout(() => this.idProductoInput?.nativeElement?.focus(), 400);
-            this.cdr.markForCheck();
-            return;
-          }
+    this.inventS.checkCodigoBarra(datos).subscribe(data => {
+      this.ngZone.run(() => {
+        if (data.resultado === 'noex') {
+          this.nuevoCodigo = true;
+          this.codigoParaAsociar = codigo;
+          setTimeout(() => this.idProductoInput?.nativeElement?.focus(), 400);
+          return;
+        }
 
-          const idProd = data?.idProducto ?? data?.id_producto;
-          if (idProd == null || idProd === '') {
-            this.alertas.enviarAlerta('Respuesta del servidor incompleta al verificar el código.', 'danger');
-            this.cdr.markForCheck();
-            return;
-          }
+        const yaExiste = this.inventarioArrayMap.get(String(data.idProducto));
+        const productoEncontrado = this.inventarioMap.get(String(data.idProducto));
 
-          const idKey = String(idProd);
-          const yaExiste = this.inventarioArrayMap.get(idKey);
-          const productoEncontrado = this.inventarioMap.get(idKey);
-
-          if (yaExiste) {
-            this.nombreProducto = data.nombre || '';
-            this.precio = data.precio ? parseFloat(data.precio) : null;
-            this.id_producto = data.id_producto || idKey;
-            this.sumarOEditar = true;
-            this.productoEditando = idProd;
-            this.productoSeleccionadoNombre = productoEncontrado?.nombre || data.nombre || '';
-            this.cantidadSoE = null;
-            this.focusCantidadConTeclado(() => this.cantidadSoEInputRef);
-            this.cdr.markForCheck();
-            return;
-          }
-
-          if (productoEncontrado) {
-            this.nombreProducto = data.nombre || productoEncontrado.nombre || '';
-            this.precio = data.precio ? parseFloat(data.precio) : (productoEncontrado.precio_venta || 0);
-            this.id_producto = data.id_producto || idKey;
-            this.productoSeleccionado = productoEncontrado;
-            this.mostrarModal = true;
-            this.editando = false;
-            this.codigo = codigo;
-            this.cantidad = null;
-            this.focusCantidadConTeclado(() => this.cantidadInputRef);
-            this.cdr.markForCheck();
-            return;
-          }
-
-          this.alertas.enviarAlerta(`Producto ${codigo} no registrado en este inventario.`, 'danger');
+        if (yaExiste) {
+          this.nombreProducto = data.nombre || '';
+          this.precio = data.precio ? parseFloat(data.precio) : null;
+          this.id_producto = data.id_producto || '';
+          this.sumarOEditar = true;
+          this.productoEditando = data.idProducto;
+          this.productoSeleccionadoNombre = productoEncontrado?.nombre || data.nombre || '';
+          this.cantidadSoE = null;
+          this.focusCantidadConTeclado(() => this.cantidadSoEInputRef);
           this.cdr.markForCheck();
-        });
-      },
-      error: () => {
-        this.ngZone.run(() => {
-          this.alertas.enviarAlerta('No se pudo verificar el código escaneado. Revisa la conexión o vuelve a intentar.', 'danger');
+          return;
+        }
+
+        if (productoEncontrado) {
+          this.nombreProducto = data.nombre || productoEncontrado.nombre || '';
+          this.precio = data.precio ? parseFloat(data.precio) : (productoEncontrado.precio_venta || 0);
+          this.id_producto = data.id_producto || '';
+          this.productoSeleccionado = productoEncontrado;
+          this.mostrarModal = true;
+          this.editando = false;
+          this.codigo = codigo;
+          this.cantidad = null;
+          this.focusCantidadConTeclado(() => this.cantidadInputRef);
           this.cdr.markForCheck();
-        });
-      }
+          return;
+        }
+
+        this.alertas.enviarAlerta(`Producto ${codigo} no registrado en este inventario.`, 'danger');
+      });
     });
   }
 
@@ -252,7 +234,7 @@ export class InventarioPage implements OnInit, OnDestroy {
 
     const idProducto = this.editando
       ? this.productoEditando
-      : (this.productoSeleccionado?.id_producto ?? this.productoSeleccionado?.idProducto);
+      : this.productoSeleccionado?.id_producto;
 
     if (!idProducto) {
       this.alertas.enviarAlerta('ID de producto no válido.', 'danger');
@@ -408,12 +390,9 @@ export class InventarioPage implements OnInit, OnDestroy {
   }
 
   refrescarProductos(prioritizeId?: string): void {
-    if (!this.idInventario || !this.usuario?.id) {
-      return;
-    }
     const datos = new FormData();
     datos.append('idInventario', this.idInventario);
-    datos.append('idUsuario', String(this.usuario.id));
+    datos.append('idUsuario', this.usuario['id']);
 
     this.inventS.getInventariosProductos(datos).subscribe(data => {
       this.inventarioArray = data || [];
