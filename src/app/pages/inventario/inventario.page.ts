@@ -1,5 +1,5 @@
 import {
-  Component, ViewChild, ElementRef, OnInit, OnDestroy,
+  Component, ViewChild, ElementRef, OnInit, OnDestroy, AfterViewInit,
   ChangeDetectionStrategy, ChangeDetectorRef, NgZone
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -27,7 +27,7 @@ import { DeviceProfileService } from 'src/app/services/device-profile.service';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InventarioPage implements OnInit, OnDestroy {
+export class InventarioPage implements OnInit, OnDestroy, AfterViewInit {
 
   usuario: any;
   idInventario: string;
