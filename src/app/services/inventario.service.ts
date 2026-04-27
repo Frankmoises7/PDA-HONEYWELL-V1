@@ -27,6 +27,12 @@ export class InventarioService {
     });
   }
 
+  getProductoPorId(idProducto: string): Observable<any> {
+    return this.http.get(environment.api_url + 'getProductoPorId/' + idProducto, {
+      responseType: 'json'
+    });
+  }
+
 
   getInventarios(): Observable<any> {
     return this.http.get(environment.api_url + 'getInventarios/'+this.token.getToken(), {

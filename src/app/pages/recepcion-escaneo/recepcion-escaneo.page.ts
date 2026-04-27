@@ -331,7 +331,7 @@ export class RecepcionEscaneoPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.inventS.getProducto(this.idProductoManual).subscribe({
+    this.inventS.getProductoPorId(this.idProductoManual).subscribe({
       next: (producto: any) => {
         if (!producto?.id_producto) {
           this.alertas.enviarAlerta('ID no corresponde a un producto válido.', 'danger');
